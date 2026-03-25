@@ -1,3 +1,12 @@
+import sys
+import os
+
+# Автоматически находим корень проекта и добавляем его в пути поиска
+# Это исправляет ошибку "ModuleNotFoundError: No module named 'translations'"
+root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if root_path not in sys.path:
+    sys.path.append(root_path)
+
 from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery
 from aiogram.filters import CommandStart, Command
@@ -70,5 +79,6 @@ async def cmd_feedback_start(message: Message):
 @router.message(Command("chats"))
 @router.message(F.text.func(lambda t: any(t == x for x in ["💬 Чаты", "💬 Chats", "💬 Չաթեր"])))
 async def cmd_chats_menu(message: Message):
+    # Импорт перенесен внутрь функции, чтобы избежать циклической ошибки (Circular Import)
     from handlers.chats import show_chats
     await show_chats(message)
